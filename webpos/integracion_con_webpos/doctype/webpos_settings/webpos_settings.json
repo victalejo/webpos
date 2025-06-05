@@ -1,0 +1,155 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2025-06-05 05:30:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+     "enabled",
+     "section_break_2",
+     "environment",
+     "company_lic_cod",
+     "branch_cod",
+     "pos_cod",
+     "column_break_7",
+     "test_url",
+     "production_url",
+     "section_break_10",
+     "authentication_method",
+     "username",
+     "password",
+     "column_break_14",
+     "api_key",
+     "section_break_16",
+     "strict_mode",
+     "auto_send"
+    ],
+    "fields": [
+     {
+      "default": "0",
+      "fieldname": "enabled",
+      "fieldtype": "Check",
+      "label": "Enabled"
+     },
+     {
+      "fieldname": "section_break_2",
+      "fieldtype": "Section Break",
+      "label": "WebPos Configuration"
+     },
+     {
+      "default": "Test",
+      "fieldname": "environment",
+      "fieldtype": "Select",
+      "label": "Environment",
+      "options": "Test\nProduction",
+      "reqd": 1
+     },
+     {
+      "fieldname": "company_lic_cod",
+      "fieldtype": "Data",
+      "label": "Company License Code",
+      "reqd": 1
+     },
+     {
+      "default": "0000",
+      "fieldname": "branch_cod",
+      "fieldtype": "Data",
+      "label": "Branch Code",
+      "reqd": 1
+     },
+     {
+      "default": "001",
+      "fieldname": "pos_cod",
+      "fieldtype": "Data",
+      "label": "POS Code",
+      "reqd": 1
+     },
+     {
+      "fieldname": "column_break_7",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "https://fepatest-api.webposonline.com",
+      "fieldname": "test_url",
+      "fieldtype": "Data",
+      "label": "Test URL"
+     },
+     {
+      "default": "https://fepa-api.webposonline.com",
+      "fieldname": "production_url",
+      "fieldtype": "Data",
+      "label": "Production URL"
+     },
+     {
+      "fieldname": "section_break_10",
+      "fieldtype": "Section Break",
+      "label": "Authentication"
+     },
+     {
+      "default": "OAuth",
+      "fieldname": "authentication_method",
+      "fieldtype": "Select",
+      "label": "Authentication Method",
+      "options": "OAuth\nAPI Key"
+     },
+     {
+      "fieldname": "username",
+      "fieldtype": "Data",
+      "label": "Username"
+     },
+     {
+      "fieldname": "password",
+      "fieldtype": "Password",
+      "label": "Password"
+     },
+     {
+      "fieldname": "column_break_14",
+      "fieldtype": "Column Break"
+     },
+     {
+      "fieldname": "api_key",
+      "fieldtype": "Data",
+      "label": "API Key"
+     },
+     {
+      "fieldname": "section_break_16",
+      "fieldtype": "Section Break",
+      "label": "Settings"
+     },
+     {
+      "default": "1",
+      "fieldname": "strict_mode",
+      "fieldtype": "Check",
+      "label": "Strict Mode"
+     },
+     {
+      "default": "1",
+      "fieldname": "auto_send",
+      "fieldtype": "Check",
+      "label": "Auto Send Invoices"
+     }
+    ],
+    "index_web_pages_for_search": 1,
+    "issingle": 1,
+    "links": [],
+    "modified": "2025-06-05 05:30:00.000000",
+    "modified_by": "Administrator",
+    "module": "Integracion con WebPos",
+    "name": "WebPos Settings",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+   }

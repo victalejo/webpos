@@ -1,0 +1,105 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "naming_series:",
+    "creation": "2025-06-05 05:30:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+     "naming_series",
+     "invoice",
+     "status",
+     "cufe",
+     "column_break_4",
+     "timestamp",
+     "section_break_6",
+     "response_data",
+     "error_message"
+    ],
+    "fields": [
+     {
+      "default": "WPL-.####",
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Series",
+      "options": "WPL-.####"
+     },
+     {
+      "fieldname": "invoice",
+      "fieldtype": "Link",
+      "label": "Sales Invoice",
+      "options": "Sales Invoice",
+      "reqd": 1
+     },
+     {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Success\nError\nPending\nCancelled",
+      "reqd": 1
+     },
+     {
+      "fieldname": "cufe",
+      "fieldtype": "Data",
+      "label": "CUFE"
+     },
+     {
+      "fieldname": "column_break_4",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "now",
+      "fieldname": "timestamp",
+      "fieldtype": "Datetime",
+      "label": "Timestamp"
+     },
+     {
+      "fieldname": "section_break_6",
+      "fieldtype": "Section Break"
+     },
+     {
+      "fieldname": "response_data",
+      "fieldtype": "Long Text",
+      "label": "Response Data"
+     },
+     {
+      "fieldname": "error_message",
+      "fieldtype": "Text",
+      "label": "Error Message"
+     }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2025-06-05 05:30:00.000000",
+    "modified_by": "Administrator",
+    "module": "Integracion con WebPos",
+    "name": "WebPos Transaction Log",
+    "naming_rule": "By \"Naming Series\" field",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     },
+     {
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Accounts Manager",
+      "share": 1
+     }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+   }
