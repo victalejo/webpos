@@ -18,21 +18,24 @@ def sales_invoice_to_webpos_json(sales_invoice):
     webpos_json = {
         "fiscalDoc": {
             "companyLicCod": settings.company_lic_cod,
-            "branchCod": settings.branch_cod or "0000",
-            "posCod": settings.pos_cod or "001",
+            "branchCod": (settings.branch_cod or "0000").zfill(4),  # Asegurar 4 dígitos
+            "posCod": (settings.pos_cod or "001").zfill(3),        # Asegurar 3 dígitos
             "docType": doc_type,
             "docNumber": sales_invoice.name,
             "customerName": sales_invoice.customer_name[:150],  # Máximo 150 caracteres
             "customerRUC": _get_customer_tax_id(sales_invoice.customer),
-            "customerType": _get_customer_type(sales_invoice.customer),
+            "customerType": _get_customer_type(sales_invoice.customer),  # OBLIGATORIO
             "customerAddress": _get_customer_address(sales_invoice.customer),
             "email": _get_customer_email(sales_invoice.customer),
-            "items": _get_invoice_items(sales_invoice),
-            "payments": _get_invoice_payments(sales_invoice) if sales_invoice.payments else []
+            "items": _get_invoice_items(sales_invoice)
         }
     }
     
-    # Agregar campos opcionales
+    # Agregar pagos si existen
+    if sales_invoice.payments:
+        webpos_json["fiscalDoc"]["payments"] = _get_invoice_payments(sales_invoice)
+    
+    # Para notas de crédito/débito
     if sales_invoice.is_return and sales_invoice.return_against:
         webpos_json["fiscalDoc"]["invoiceNumber"] = sales_invoice.return_against
     
@@ -44,18 +47,17 @@ def _get_customer_tax_id(customer_name):
     return customer.tax_id or customer.name
 
 def _get_customer_type(customer_name):
-    """Determinar tipo de cliente según WebPos"""
+    """Determinar tipo de cliente - OBLIGATORIO según spec"""
     customer = frappe.get_doc("Customer", customer_name)
     
-    # Mapeo de tipos de cliente
-    customer_type_mapping = {
+    # Mapeo según especificación WebPos
+    type_mapping = {
         "Company": "04",      # Empresa
         "Individual": "05",   # Persona natural contribuyente
         "Government": "03",   # Gobierno
-        "Foreign": "06",      # Extranjero
     }
     
-    return customer_type_mapping.get(customer.customer_type, "07")  # Default: Consumidor final
+    return type_mapping.get(customer.customer_type, "07")  # Default: Consumidor final
 
 def _get_customer_address(customer_name):
     """Obtener dirección del cliente"""
@@ -76,7 +78,7 @@ def _get_customer_email(customer_name):
     return customer.email_id or ""
 
 def _get_invoice_items(sales_invoice):
-    """Convertir items de la factura al formato WebPos"""
+    """Convertir items según especificación WebPos"""
     items = []
     
     for idx, item in enumerate(sales_invoice.items, 1):
@@ -84,15 +86,15 @@ def _get_invoice_items(sales_invoice):
             "id": idx,
             "qty": flt(item.qty),
             "code": item.item_code[:14],  # Máximo 14 caracteres
-            "desc": item.description[:500] if item.description else item.item_name[:500],
+            "desc": (item.description or item.item_name)[:500],  # Máximo 500 caracteres
             "price": flt(item.rate),
             "tax": _get_tax_type(item),
             "comments": item.item_name[:250] if item.item_name != item.description else ""
         }
         
-        # Agregar descuentos si existen
+        # Manejar descuentos
         if item.discount_percentage:
-            webpos_item["dperc"] = f"{item.discount_percentage}%"
+            webpos_item["dperc"] = f"{flt(item.discount_percentage)}%"
         elif item.discount_amount:
             webpos_item["damt"] = flt(item.discount_amount)
         

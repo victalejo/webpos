@@ -27,7 +27,9 @@ fixtures = [
                     "Sales Invoice-webpos_auth_number",
                     "Sales Invoice-webpos_auth_date",
                     "Sales Invoice-webpos_pdf_url",
-                    "Sales Invoice-webpos_xml_signed"
+                    "Sales Invoice-webpos_xml_signed",
+                    "Sales Invoice-webpos_qr_content",
+                    "Sales Invoice-webpos_confirmation_number"
                 ]
             ]
         ]
