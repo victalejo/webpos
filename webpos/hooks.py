@@ -15,21 +15,22 @@ doc_events = {
     }
 }
 
-# Campos personalizados para Sales Invoice
+# Fixtures para instalar automáticamente
 fixtures = [
     {
-        "doctype": "Custom Field",
+        "dt": "Custom Field",
         "filters": [
             [
-                "name", "in", [
-                    "Sales Invoice-webpos_cufe",
-                    "Sales Invoice-webpos_status",
-                    "Sales Invoice-webpos_auth_number",
-                    "Sales Invoice-webpos_auth_date",
-                    "Sales Invoice-webpos_pdf_url",
-                    "Sales Invoice-webpos_xml_signed",
-                    "Sales Invoice-webpos_qr_content",
-                    "Sales Invoice-webpos_confirmation_number"
+                "dt", "=", "Sales Invoice"
+            ],
+            [
+                "fieldname", "in", [
+                    "webpos_cufe",
+                    "webpos_status", 
+                    "webpos_auth_number",
+                    "webpos_auth_date",
+                    "webpos_qr_content",
+                    "webpos_xml_signed"
                 ]
             ]
         ]

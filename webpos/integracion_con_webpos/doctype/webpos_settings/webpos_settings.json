@@ -22,7 +22,13 @@
      "api_key",
      "section_break_16",
      "strict_mode",
-     "auto_send"
+     "auto_send",
+     "section_break_customer",
+     "customer_ruc_field",
+     "default_ruc_for_testing",
+     "column_break_customer",
+     "default_customer_address",
+     "require_customer_ruc"
     ],
     "fields": [
      {
@@ -127,6 +133,43 @@
       "fieldname": "auto_send",
       "fieldtype": "Check",
       "label": "Auto Send Invoices"
+     },
+     {
+      "fieldname": "section_break_customer",
+      "fieldtype": "Section Break",
+      "label": "Customer Configuration"
+     },
+     {
+      "default": "tax_id",
+      "fieldname": "customer_ruc_field",
+      "fieldtype": "Select",
+      "label": "Customer RUC Field",
+      "options": "tax_id\ncustom_ruc\ncustom_cedula\ncustom_tax_identification",
+      "reqd": 1
+     },
+     {
+      "fieldname": "default_ruc_for_testing",
+      "fieldtype": "Data",
+      "label": "Default RUC for Testing",
+      "description": "RUC usado cuando el cliente no tiene RUC configurado (formato: 123456-1-123456)"
+     },
+     {
+      "fieldname": "column_break_customer",
+      "fieldtype": "Column Break"
+     },
+     {
+      "default": "Panamá, Panamá",
+      "fieldname": "default_customer_address",
+      "fieldtype": "Data",
+      "label": "Default Customer Address",
+      "description": "Dirección usada cuando el cliente no tiene dirección"
+     },
+     {
+      "default": "1",
+      "fieldname": "require_customer_ruc",
+      "fieldtype": "Check",
+      "label": "Require Customer RUC",
+      "description": "Si está marcado, no permitirá enviar facturas sin RUC del cliente"
      }
     ],
     "index_web_pages_for_search": 1,

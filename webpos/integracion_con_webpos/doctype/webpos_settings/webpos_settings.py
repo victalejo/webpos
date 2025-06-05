@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+import re
 
 class WebPosSettings(Document):
 	def validate(self):
@@ -22,3 +23,17 @@ class WebPosSettings(Document):
 			elif self.authentication_method == "API Key":
 				if not self.api_key:
 					frappe.throw("API Key es requerido")
+			
+			# Validar formato del RUC por defecto
+			if self.default_ruc_for_testing:
+				if not self.validate_ruc_format(self.default_ruc_for_testing):
+					frappe.throw("Default RUC format is invalid. Use format: 123456-1-123456")
+	
+	def validate_ruc_format(self, ruc):
+		"""Validar formato del RUC panameño"""
+		if not ruc:
+			return False
+		
+		# Patrón para RUC panameño: NNNNNN-N-NNNNNN
+		ruc_pattern = r'^\d{4,8}-\d{1}-\d{4,6}$'
+		return bool(re.match(ruc_pattern, str(ruc).strip()))
