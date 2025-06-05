@@ -4,6 +4,8 @@ from frappe import _
 from .webpos_client import WebPosClient
 from .utils import sales_invoice_to_webpos_json
 import json
+from datetime import datetime
+import re
 
 def before_sales_invoice_submit(doc, method):
     """Validaciones antes de enviar factura"""
@@ -39,11 +41,22 @@ def on_sales_invoice_submit(doc, method):
         
         # Procesar respuesta
         if response.get("accepted"):
-            # Actualizar campos de la factura
+            # Actualizar campos de la factura con fechas parseadas correctamente
             doc.db_set("webpos_cufe", response.get("cufe"))
             doc.db_set("webpos_status", "Autorizada")
             doc.db_set("webpos_auth_number", response.get("confirmationNbr"))
-            doc.db_set("webpos_auth_date", response.get("dateSentToDgi"))
+            
+            # Parsear y convertir la fecha de autorización
+            auth_date = _parse_webpos_datetime(response.get("dateSentToDgi"))
+            if auth_date:
+                doc.db_set("webpos_auth_date", auth_date)
+            
+            # Guardar QR content y XML si están disponibles
+            if response.get("qrContent"):
+                doc.db_set("webpos_qr_content", response.get("qrContent"))
+            
+            if response.get("xmlFeSigned"):
+                doc.db_set("webpos_xml_signed", response.get("xmlFeSigned"))
             
             # Crear log de transacción
             _create_transaction_log(doc.name, "Success", response)
@@ -117,6 +130,52 @@ def on_sales_invoice_cancel(doc, method):
     # Crear log
     _create_transaction_log(doc.name, "Cancelled", {"cufe": doc.webpos_cufe})
 
+def _parse_webpos_datetime(datetime_str):
+    """Parsear fecha de WebPos al formato compatible con Frappe/MySQL"""
+    if not datetime_str:
+        return None
+    
+    try:
+        # Formato de WebPos: 2025-06-05T03:25:58.7862964-05:00
+        # Limpiar microsegundos excesivos y timezone
+        
+        # Remover timezone si existe
+        if '+' in datetime_str or datetime_str.count('-') > 2:
+            # Encontrar la posición del timezone
+            tz_pattern = r'([+-]\d{2}:\d{2})$'
+            datetime_str = re.sub(tz_pattern, '', datetime_str)
+        
+        # Limpiar microsegundos excesivos (MySQL soporta hasta 6 dígitos)
+        if '.' in datetime_str:
+            date_part, microsec_part = datetime_str.split('.')
+            # Limitar microsegundos a 6 dígitos
+            microsec_part = microsec_part[:6].ljust(6, '0')
+            datetime_str = f"{date_part}.{microsec_part}"
+        
+        # Parsear diferentes formatos posibles
+        formats_to_try = [
+            "%Y-%m-%dT%H:%M:%S.%f",     # Con microsegundos
+            "%Y-%m-%dT%H:%M:%S",        # Sin microsegundos
+            "%Y-%m-%d %H:%M:%S.%f",     # Formato alternativo con espacio
+            "%Y-%m-%d %H:%M:%S"         # Formato alternativo sin microsegundos
+        ]
+        
+        for fmt in formats_to_try:
+            try:
+                parsed_date = datetime.strptime(datetime_str, fmt)
+                # Convertir a formato compatible con Frappe
+                return parsed_date.strftime("%Y-%m-%d %H:%M:%S.%f")
+            except ValueError:
+                continue
+        
+        # Si no se pudo parsear, usar fecha actual
+        frappe.log_error(f"No se pudo parsear fecha de WebPos: {datetime_str}", "WebPos Date Parse Error")
+        return frappe.utils.now()
+        
+    except Exception as e:
+        frappe.log_error(f"Error parseando fecha WebPos {datetime_str}: {str(e)}", "WebPos Date Parse Error")
+        return frappe.utils.now()
+
 def _create_transaction_log(invoice_name, status, response_data):
     """Crear log de transacción"""
     try:
@@ -129,5 +188,6 @@ def _create_transaction_log(invoice_name, status, response_data):
             "cufe": response_data.get("cufe", "") if isinstance(response_data, dict) else ""
         })
         log.insert(ignore_permissions=True)
+        frappe.db.commit()
     except Exception as e:
         frappe.log_error(f"Error creating transaction log: {str(e)}", "WebPos Transaction Log Error")
